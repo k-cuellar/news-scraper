@@ -56,11 +56,10 @@ app.get("/scrape", function(req, res) {
     // An empty array to save the data that we'll scrape
     var result = {};
 
-    // With cheerio, find each div-tag with the "nw-c-top..." class
+    // With cheerio, find each div-tag with the ".has-image" class
     // (i: iterator. element: the current element)
     $(".has-image").each(function(i, element) {
 
-      // Save the text of the element in a "title" variable
       result.title = $(element).children(".item-info").children(".title").children().text();
       result.description = $(element).children(".item-info").children(".teaser").children("a").text();
       result.link = $(element).children(".item-info").children(".title").children().attr("href");
