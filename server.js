@@ -23,10 +23,12 @@ app.use(bodyParser.urlencoded({
 // Make public a static dir
 app.use(express.static("public"));
 
-// Database configuration with mongoose !!!!!!!!!**********
+// Database configuration with mongoose
+mongoose.connect("mongodb://newUser:JFIbgocDecGeile8@ds161322.mlab.com:61322/heroku_jwn9l7x8");
 
-// ---CHANGE THIS!!!
-mongoose.connect("mongodb://heroku_ww7pvmbt:gplc7ga009dnb0l901f3sor8j1@ds135364.mlab.com:35364/heroku_ww7pvmbt");
+
+
+// --- end database configuration
 var db = mongoose.connection;
 
 // Show any mongoose errors
