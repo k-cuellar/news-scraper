@@ -2,12 +2,15 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+
 // Require Article and Comment models
-var Article = require("./models/newsArticle.js");
-var Comment = require("./models/comment.js");
+var Article = require("./models/article");
+var Comment = require("./models/comment");
+
 // Scraping tools
 var request = require("request");
 var cheerio = require("cheerio");
+
 // Set mongoose to leverage built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
 
@@ -15,36 +18,22 @@ mongoose.Promise = Promise;
 // Initialize Express
 var app = express();
 
-app.use(logger("dev"));
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+// Configure middleware
 
-// Make public a static dir
+// Use morgan logger for logging requests
+app.use(logger("dev"));
+// Use body-parser for handling form submissions
+app.use(bodyParser.urlencoded({ extended: true }));
+// Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
 
-// Database configuration with mongoose
-mongoose.connect("mongodb://newUser:JFIbgocDecGeile8@ds161322.mlab.com:61322/heroku_jwn9l7x8");
-
-
-
-// --- end database configuration
-var db = mongoose.connection;
-
-// Show any mongoose errors
-db.on("error", function(error) {
-  console.log("Mongoose Error: ", error);
-});
-
-// Once logged in to the db through mongoose, log a success message
-db.once("open", function() {
-  console.log("Mongoose connection successful.");
-});
+// Connect to the Mongo DB
+mongoose.connect("mongodb://localhost/articleDB", { useNewUrlParser: true });
 
 
 // Routes
 // ==================================================
-// ++++++GET request to scrape Outdoor Gear Lab website
+// ++++++GET request to scrape website
 app.get("/scrape", function(req, res) {
   request("https://www.npr.org/sections/news/", function(error, response, html) {
     if (error) {
@@ -89,7 +78,7 @@ app.get("/scrape", function(req, res) {
 });
 
 
-// +++++++++GET request to grab all the articles we scraped from the database
+// GET request to grab all the articles we scraped from the database
 app.get("/articles", function(req, res) {
   // Grab every doc in the Articles array
   Article.find({}, function(error, doc) {
@@ -104,7 +93,7 @@ app.get("/articles", function(req, res) {
   });
 });
 
-// ++++++++GET request to grab a particular article by id
+// GET request to grab a particular article by id
 app.get("/articles/:id", function(req, res) {
   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
   Article.findOne({ "_id": req.params.id })
@@ -123,7 +112,7 @@ app.get("/articles/:id", function(req, res) {
   });
 });
 
-// +++++++++POST request to create a new note or replace an existing one
+// POST request to create a new note or replace an existing one
 app.post("/articles/:id", function(req, res) {
   // Create a new note and pass the req.body to the entry
   var newComment = new Comment(req.body);

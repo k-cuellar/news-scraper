@@ -70,4 +70,6 @@ $.getJSON("/articles", function(data) {
     // Also, remove the values entered in the input and textarea for note entry
     $("#titleinput").val("");
     $("#bodyinput").val("");
+
+
   });
